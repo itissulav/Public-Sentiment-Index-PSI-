@@ -1,0 +1,171 @@
+{% extends "base.html" %} 
+{% block title %}Home - Public Sentiment Index{% endblock %} 
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="home-container">
+  {% if user %}
+    <!-- LOGGED IN VIEW -->
+    <div class="dashboard-header">
+      <h1>Welcome back, <span class="gradient-text">{{ user.get_first_name() }}</span></h1>
+      <p>Here's what's trending in public sentiment today.</p>
+    </div>
+
+    <!-- User Quick Stats or Explore -->
+    <div class="quick-stats-grid">
+      <div class="glass-card trending-card">
+        <div class="card-icon">🔥</div>
+        <h3>Trending Topics</h3>
+        <p>Explore what everyone is talking about.</p>
+        <a href="#" class="btn-glow-small mt-3">Explore Trends</a>
+      </div>
+      <div class="glass-card history-card">
+        <div class="card-icon">📊</div>
+        <h3>Saved Scans</h3>
+        <p>You have 0 saved sentiment reports.</p>
+        <a href="#" class="btn-outline mt-3">View History</a>
+      </div>
+      <div class="glass-card profile-card">
+        <div class="profile-avatar">{{ user.get_first_name()[0] }}{{ user.get_last_name()[0] }}</div>
+        <div class="profile-details">
+          <h3>@{{ user.get_username() }}</h3>
+          <p class="role-text">{{ user.get_role() }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Trends Preview -->
+    <div class="trends-preview-section">
+      <div class="section-header-flex">
+        <h2>Live Sentiment Trends</h2>
+        <a href="#" class="view-all-link">View All →</a>
+      </div>
+      <div class="trends-list">
+        <!-- Mock Trend Items -->
+        <div class="trend-item">
+          <div class="trend-rank">#1</div>
+          <div class="trend-info">
+            <h4>Global Economy 2026</h4>
+            <p>12.5k posts analyzed in the last 24h</p>
+          </div>
+          <div class="trend-score-area">
+            <div class="sentiment-bar-bg">
+              <div class="sentiment-bar-fill good" style="width: 78%;"></div>
+            </div>
+            <div class="trend-sentiment positive">
+              <span class="score">78%</span>
+              <span class="label">Positive</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="trend-item">
+          <div class="trend-rank">#2</div>
+          <div class="trend-info">
+            <h4>Healthcare Reform Data</h4>
+            <p>8.2k posts analyzed in the last 24h</p>
+          </div>
+           <div class="trend-score-area">
+            <div class="sentiment-bar-bg">
+              <div class="sentiment-bar-fill neutral" style="width: 45%;"></div>
+            </div>
+            <div class="trend-sentiment neutral">
+              <span class="score">45%</span>
+              <span class="label">Neutral</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="trend-item">
+          <div class="trend-rank">#3</div>
+          <div class="trend-info">
+            <h4>Tech Regulation Hearing</h4>
+            <p>15.1k posts analyzed in the last 24h</p>
+          </div>
+           <div class="trend-score-area">
+            <div class="sentiment-bar-bg">
+              <div class="sentiment-bar-fill bad" style="width: 25%;"></div>
+            </div>
+            <div class="trend-sentiment negative">
+              <span class="score">25%</span>
+              <span class="label">Negative</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  {% else %}
+    <!-- LOGGED OUT VIEW -->
+    <div class="hero-landing">
+      <div class="hero-content-centered">
+        <div class="badge glow-badge">The Future of Data Analytics</div>
+        <h1 class="hero-title">Decode the Public Pulse in <span class="gradient-text">Real-Time</span></h1>
+        <p class="hero-subtitle">
+          The Public Sentiment Index (PSI) harnesses the power of advanced Transformer models 
+          to quantify national emotions. Stop guessing what the public thinks. Know it.
+        </p>
+        <div class="hero-actions">
+          <a href="{{ url_for('auth.register') }}" class="btn-glow">Get Started Free</a>
+          <a href="{{ url_for('main.about') }}" class="btn-outline-large">Learn More</a>
+        </div>
+      </div>
+      
+      <!-- Mockup Visual -->
+      <div class="hero-visual">
+        <div class="glass-window mock-dashboard">
+          <div class="window-header">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <div class="window-body">
+            <div class="mock-chart-container">
+              <div class="mock-chart">
+                 <div class="bar bar-1"></div>
+                 <div class="bar bar-2"></div>
+                 <div class="bar bar-3"></div>
+                 <div class="bar bar-4"></div>
+                 <div class="bar bar-5"></div>
+              </div>
+              <div class="chart-line"></div>
+            </div>
+            <div class="mock-stats">
+              <div class="m-stat"><div class="m-val">92%</div><div class="m-lbl">Accuracy</div></div>
+              <div class="m-stat"><div class="m-val highlight">2.5M+</div><div class="m-lbl">Posts Analyzed</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Feature Highlights -->
+    <div class="features-section">
+      <div class="section-header-centered">
+        <h2>Why Choose PSI?</h2>
+        <p>Advanced metrics to empower decision making.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="f-icon">🧠</div>
+          <h3>AI-Powered NLP</h3>
+          <p>Utilizing state-of-the-art Natural Language Processing to accurately classify complex human emotions.</p>
+        </div>
+        <div class="feature-card">
+          <div class="f-icon">⚡</div>
+          <h3>Real-Time Analytics</h3>
+          <p>Live data streaming ensures you're always looking at the most current public sentiment.</p>
+        </div>
+        <div class="feature-card">
+          <div class="f-icon">🔒</div>
+          <h3>Unbiased & Secure</h3>
+          <p>Our algorithms are designed to reduce structural bias and provide an objective quantifiable score.</p>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

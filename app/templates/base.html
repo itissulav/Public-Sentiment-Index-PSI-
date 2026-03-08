@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{% endblock %} | PSI</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/base.css') }}"
+    />
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="{{ url_for('main.home') }}" class="nav-logo">
+          <span class="logo-text">Public Sentiment <span>Index</span></span>
+        </a>
+
+        <input type="checkbox" id="nav-toggle" class="nav-toggle" />
+        <label for="nav-toggle" class="nav-toggle-label">
+          <span></span>
+        </label>
+
+        <ul class="nav-menu">
+          <li>
+            <a href="{{ url_for('main.home') }}" class="nav-link">Home</a>
+          </li>
+          <li>
+            <a href="{{ url_for('main.about') }}" class="nav-link">About</a>
+          </li>
+          
+          {% if user and user.get_role() | lower == 'admin' %}
+          <li><a href="{{ url_for('main.admindashboard') }}" class="nav-link" style="color: var(--primary);">Admin Dashboard</a></li>
+          {% else %}
+          <li><a href="{{ url_for('main.trends') }}" class="nav-link">Trends</a></li>
+          {% endif %}
+
+          {% if user %}
+          <li>
+            <a href="{{ url_for('auth.logout') }}" class="nav-link">Logout</a>
+          </li>
+          <li class="nav-item-user">
+            <a href="#" class="nav-btn-profile">
+              {{ user.get_first_name()[0] }}{{ user.get_last_name()[0] }}
+            </a>
+          </li>
+          {% else %}
+          <li>
+            <a href="{{ url_for('auth.login') }}" class="nav-link">Login</a>
+          </li>
+          <li>
+            <a href="{{ url_for('auth.register') }}" class="nav-btn"
+              >Get Started</a
+            >
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+
+    <main class="content-wrapper">{% block content %}{% endblock %}</main>
+  </body>
+</html>

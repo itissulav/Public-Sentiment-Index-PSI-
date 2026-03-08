@@ -1,0 +1,138 @@
+{% extends "base.html" %} 
+{% block title %}About - Public Sentiment Index{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}" />
+{% endblock %} 
+
+{% block content %}
+<div class="about-hero">
+  <div class="hero-container">
+    <div class="hero-text">
+      <span class="badge">Innovation in Analytics</span>
+      <h1>Understanding the Pulse of the Nation</h1>
+      <p>
+        The Public Sentiment Index (PSI) systematically measures and analyzes the collective emotions, 
+        opinions, and attitudes of the public on major national issues using state-of-the-art Transformer models.
+      </p>
+      <a href="#discover" class="btn-glow">Discover How</a>
+    </div>
+    <div class="hero-image">
+      <div class="image-wrapper">
+        <img src="{{ url_for('static', filename='img/psi_hero.png') }}" alt="PSI Hero Illustration Data Network" />
+        <div class="glow-backdrop"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="about-container" id="discover">
+  
+  <section class="feature-split problem-split">
+    <div class="split-text">
+      <h2 class="gradient-text">The Problem Scenario</h2>
+      <p class="lead-text">
+        Currently, sentiment measurement remains largely informal and fragmented. A huge gap exists between 
+        public expectations and deliverables by economic, political, and social institutions.
+      </p>
+      <ul class="styled-list problem-list">
+        <li>Lack of trusted programs to measure the public mood.</li>
+        <li>Inconsistent data about citizens' reactions to topics.</li>
+        <li>Limited access to real-time information.</li>
+        <li>Social media algorithms shielding users from opposing views.</li>
+      </ul>
+    </div>
+    <div class="split-image">
+      <div class="image-wrapper">
+        <img src="{{ url_for('static', filename='img/problem.png') }}" alt="Fragmented Data Illustration" />
+        <div class="glow-backdrop red-glow"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="feature-split solution-split reverse-layout">
+    <div class="split-text">
+      <h2 class="gradient-text">The Solution (PSI)</h2>
+      <p class="lead-text">
+        PSI bridges the gap by providing a unified and quantifiable score that represents the overall public mood 
+        at any given time, serving as a reliable indicator for all stakeholders.
+      </p>
+      <ul class="styled-list solution-list">
+        <li>A structured database of public perceptions.</li>
+        <li>Statistical and sentiment analysis models generating a single PSI score.</li>
+        <li>Incorporating categories like economy, politics, and business.</li>
+        <li>Providing evidence-based data for better representation.</li>
+      </ul>
+    </div>
+    <div class="split-image">
+      <div class="image-wrapper">
+        <img src="{{ url_for('static', filename='img/solution.png') }}" alt="Unified Data Core Solution" />
+        <div class="glow-backdrop cyan-glow"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="audience-section">
+    <div class="section-header text-center">
+      <h2>Who is this for?</h2>
+      <p>Designed to cater to a wide range of analytical stakeholders.</p>
+    </div>
+    <div class="audience-grid">
+      <div class="audience-card">
+        <div class="card-icon-modern">🏦</div>
+        <h3>Government</h3>
+        <p>Understand citizens' emotions towards different topics to take them into consideration when working.</p>
+      </div>
+      <div class="audience-card">
+        <div class="card-icon-modern">⚖️</div>
+        <h3>Policy Makers</h3>
+        <p>Make use of structured and visualized data to understand citizens of a particular region for better policies.</p>
+      </div>
+      <div class="audience-card">
+        <div class="card-icon-modern">🗳️</div>
+        <h3>Voters</h3>
+        <p>Get a structured and aggregated collection of opinions to make informed choices on candidates and issues.</p>
+      </div>
+      <div class="audience-card">
+        <div class="card-icon-modern">🌍</div>
+        <h3>NGOs & INGOs</h3>
+        <p>Understand the centers of major problems to make better plans for the target audience.</p>
+      </div>
+      <div class="audience-card">
+        <div class="card-icon-modern">🎓</div>
+        <h3>Students & Youth</h3>
+        <p>Gain more information on brands, people, and social controversies to stay informed.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="aims-section">
+    <div class="aims-content">
+      <h2>Aims & Objectives</h2>
+      <p class="aim-subtitle">
+        To develop a scalable and transparent Public Sentiment Index that translates social media 
+        emotion data into a dynamic, comparable public perception score.
+      </p>
+      <div class="objectives-timeline">
+        <div class="timeline-step">
+          <div class="step-marker">01</div>
+          <p>Collect and aggregate social media posts/comments from multiple platforms.</p>
+        </div>
+        <div class="timeline-step">
+          <div class="step-marker">02</div>
+          <p>Train a Transformer-based model to classify text into granular emotions.</p>
+        </div>
+        <div class="timeline-step">
+          <div class="step-marker">03</div>
+          <p>Design an ELO-style rating system based on sentiment output.</p>
+        </div>
+        <div class="timeline-step">
+          <div class="step-marker">04</div>
+          <p>Build a user-friendly dashboard for real-time visualization.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

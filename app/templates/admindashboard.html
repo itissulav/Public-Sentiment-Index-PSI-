@@ -1,0 +1,400 @@
+{% extends "base.html" %} 
+{% block title %}Admin Dashboard - Public Sentiment Index{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admindashboard.css') }}" />
+{% endblock %} 
+
+{% block content %}
+<div class="dashboard-header">
+  <div class="header-content">
+    <h1>Admin Command Center</h1>
+    <p>Welcome back, {{ user.get_first_name() }}! Manage system analytics and user metrics below.</p>
+  </div>
+</div>
+
+<div class="dashboard-container">
+  
+  <div class="stats-grid">
+    <!-- Quick Analytics Cards -->
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-info">
+        <h3>Total Users</h3>
+        <span class="stat-number">{{ total_users }}</span>
+        <p class="stat-trend positive">↑ 12% this month</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-info">
+        <h3>Total Topic</h3>
+        <span class="stat-number">{{ total_topic }}</span>
+        <p class="stat-trend positive">↑ 12% this month</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-info">
+        <h3>Sentiment Scans</h3>
+        <span class="stat-number">1,204</span>
+        <p class="stat-trend positive">↑ Active now</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">⚠️</div>
+      <div class="stat-info">
+        <h3>System Alerts</h3>
+        <span class="stat-number">0</span>
+        <p class="stat-trend neutral">All systems nominal</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-panels">
+    
+    <!-- Tab Controls -->
+    <div class="tab-controls">
+      <button class="tab-btn active" onclick="openTab(event, 'tab-users')">👥 User Directory</button>
+      <button class="tab-btn" onclick="openTab(event, 'tab-topics')">📊 Tracked Topics</button>
+    </div>
+
+    <!-- TAB 1: USERS -->
+    <div id="tab-users" class="panel tab-content active-tab">
+      <div class="panel-header">
+        <h2>Recent Registrations</h2>
+        <button class="btn-outline">Export CSV</button>
+      </div>
+      <div class="table-responsive">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in all_users %}
+            <tr>
+              <td><span class="muted-id">{{ u.UID[:8] if u.UID else 'N/A' }}</span></td>
+              <td>{{ u.get('First Name', '') }} {{ u.get('Last Name', '') }}</td>
+              <td><span class="highlight">@{{ u.get('Username', 'unknown') }}</span></td>
+              <td>{{ u.get('Email', '') }}</td>
+              <td><span class="role-badge {{ u.get('Role', 'user') | lower }}">{{ u.get('Role', 'User') }}</span></td>
+              <td><span class="status-indicator active"></span> Active</td>
+              <td>
+                <div class="btn-icon-group">
+                  <button class="btn-icon edit" title="Edit User">✏️</button>
+                  <button class="btn-icon delete" title="Delete User">🗑️</button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+            {% if not all_users %}
+            <tr>
+              <td colspan="7" class="text-center" style="padding: 40px; color: var(--text-muted);">No recent records available.</td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 2: TOPICS -->
+    <div id="tab-topics" class="panel tab-content" style="display: none;">
+      <div class="panel-header">
+        <h2>Active Sentiment Topics</h2>
+        <button class="btn-outline primary-outline" onclick="openTopicModal()">+ Add New Topic</button>
+      </div>
+      <div class="table-responsive">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Topic Name</th>
+              <th>Posts Analyzed</th>
+              <th>PSI Score (0-100)</th>
+              <th>Tracking Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for top in topics %}
+            <tr>
+              <td><span class="muted-id">#{{ top.get('id', '') }}</span></td>
+              <td style="font-weight: 600;">{{ top.get('TopicName', 'Unnamed Topic') }}</td>
+              <td>{{ top.get('posts_analyzed', 'N/A') }}</td>
+              <td>
+                <div class="sentiment-bar-bg">
+                  {% set current_sentiment = top.get('sentiment') or 0 %}
+                  <div class="sentiment-bar-fill {% if current_sentiment > 65 %}good{% elif current_sentiment > 45 %}neutral{% else %}bad{% endif %}" style="width: {{ current_sentiment }}%;"></div>
+                </div>
+                <span class="sentiment-score-text">{{ "positive" if current_sentiment > 0 else "negative" if current_sentiment < 0 else "neutral" }}</span>
+              </td>
+              <td><span class="role-badge {% if top.get('status', 'Active') == 'Active' %}admin{% else %}user{% endif %}">{{ top.get('status', 'Active') }}</span></td>
+              <td>
+                <div class="btn-icon-group">
+                  <button class="btn-icon edit" title="Edit Topic" onclick="editTopic('{{ top.get('id') }}')">✏️</button>
+                  <button class="btn-icon delete" title="Delete Topic" onclick="deleteTopic('{{ top.get('id') }}')">🗑️</button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+  
+</div>
+
+<!-- Topic Modal Window -->
+<div id="topicModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modalTitle">Add New Topic</h2>
+      <button class="close-modal" onclick="closeTopicModal()">&times;</button>
+    </div>
+    
+    <form id="topicForm">
+      <input type="hidden" id="topicId" name="topicId">
+      
+      <div class="form-group">
+        <label for="topicName">Topic Name</label>
+        <input type="text" id="topicName" name="topicName" class="form-input" placeholder="e.g. Kathmandu Infrastructure" required>
+      </div>
+      
+      <div class="form-group">
+        <label>Sources (Name of the source)</label>
+        <div id="sourcesList" class="dynamic-list">
+          <div class="dynamic-item">
+            <input type="text" name="sources[]" class="form-input" placeholder="e.g. Twitter" required>
+            <button type="button" class="btn-add-item" onclick="addDynamicItem('sourcesList', 'sources[]', 'e.g. Facebook')">+</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Source Links (URLs)</label>
+        <div id="linksList" class="dynamic-list">
+          <div class="dynamic-item">
+            <input type="url" name="sourceLinks[]" class="form-input" placeholder="https://..." required>
+            <button type="button" class="btn-add-item" onclick="addDynamicItem('linksList', 'sourceLinks[]', 'https://...')">+</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeTopicModal()">Cancel</button>
+        <button type="submit" class="btn-submit" id="submitBtn">Save Topic</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const topicsData = {{ topics | tojson | safe }};
+
+function openTab(evt, tabName) {
+  var i, tabcontent, tablinks;
+  
+  // Hide all tab contents
+  tabcontent = document.getElementsByClassName("tab-content");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+    tabcontent[i].classList.remove("active-tab");
+  }
+  
+  // Remove "active" class from all buttons
+  tablinks = document.getElementsByClassName("tab-btn");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].classList.remove("active");
+  }
+  
+  // Show the specific tab and mark button active
+  document.getElementById(tabName).style.display = "block";
+  document.getElementById(tabName).classList.add("active-tab");
+  evt.currentTarget.classList.add("active");
+}
+
+/* Modal Functions */
+function openTopicModal() {
+  document.getElementById('modalTitle').innerText = 'Add New Topic';
+  document.getElementById('topicForm').reset();
+  document.getElementById('topicId').value = '';
+  
+  // Reset dynamic lists to single empty input
+  resetDynamicList('sourcesList', 'sources[]', 'e.g. Twitter');
+  resetDynamicList('linksList', 'sourceLinks[]', 'https://...');
+  
+  document.getElementById('topicModal').classList.add('active');
+}
+
+function closeTopicModal() {
+  document.getElementById('topicModal').classList.remove('active');
+}
+
+function addDynamicItem(listId, inputName, placeholderTxt) {
+  const list = document.getElementById(listId);
+  const div = document.createElement('div');
+  div.className = 'dynamic-item';
+  div.innerHTML = `
+    <input type="${inputName.includes('Link') ? 'url' : 'text'}" name="${inputName}" class="form-input" placeholder="${placeholderTxt}" required>
+    <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">-</button>
+  `;
+  list.appendChild(div);
+}
+
+function resetDynamicList(listId, inputName, placeholderTxt) {
+  const list = document.getElementById(listId);
+  list.innerHTML = `
+    <div class="dynamic-item">
+      <input type="${inputName.includes('Link') ? 'url' : 'text'}" name="${inputName}" class="form-input" placeholder="${placeholderTxt}" required>
+      <button type="button" class="btn-add-item" onclick="addDynamicItem('${listId}', '${inputName}', '${placeholderTxt}')">+</button>
+    </div>
+  `;
+}
+
+/* API Handlers */
+document.getElementById('topicForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Saving...";
+  
+  const id = formData.get('topicId');
+  
+  const rawSources = formData.getAll('sources[]').filter(x => x.trim() !== "");
+  const formattedSources = rawSources.map((src, idx) => {
+    let obj = {};
+    obj[`source${idx + 1}`] = src;
+    return obj;
+  });
+
+  const rawLinks = formData.getAll('sourceLinks[]').filter(x => x.trim() !== "");
+  const formattedLinks = {};
+  rawLinks.forEach((link, idx) => {
+    formattedLinks[`link${idx + 1}`] = link;
+  });
+  
+  const payload = {
+    TopicName: formData.get('topicName'),
+    Sources: formattedSources,
+    SourceLinks: formattedLinks,
+    Sentiment: 0 // New topics default sentiment
+  };
+  
+  const isEdit = id && id !== "";
+  const url = isEdit ? `/admin/api/topics/${id}` : '/admin/api/topics';
+  const method = isEdit ? 'PUT' : 'POST';
+
+  try {
+    const response = await fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      closeTopicModal();
+      window.location.reload();
+    } else {
+      const errorData = await response.json();
+      alert("Error: " + (errorData.error || "Failed to save topic"));
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Network error. Please try again.");
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Save Topic";
+  }
+});
+
+function editTopic(id) {
+  const topic = topicsData.find(t => t.id == id);
+  if (!topic) return;
+
+  document.getElementById('modalTitle').innerText = 'Edit Topic';
+  document.getElementById('topicId').value = topic.id;
+  document.getElementById('topicName').value = topic.TopicName || '';
+  
+  // Populate Sources
+  const sourcesList = document.getElementById('sourcesList');
+  sourcesList.innerHTML = '';
+  const sources = topic.Sources || [];
+  if (sources.length === 0) {
+    addDynamicItemContent('sourcesList', 'sources[]', 'e.g. Twitter', '', true);
+  } else {
+    sources.forEach((srcObj, idx) => {
+      const val = Object.values(srcObj)[0] || '';
+      addDynamicItemContent('sourcesList', 'sources[]', 'e.g. Twitter', val, idx === 0);
+    });
+  }
+
+  // Populate Links
+  const linksList = document.getElementById('linksList');
+  linksList.innerHTML = '';
+  const links = topic.SourceLinks || {};
+  const linkKeys = Object.keys(links);
+  if (linkKeys.length === 0) {
+    addDynamicItemContent('linksList', 'sourceLinks[]', 'https://...', '', true);
+  } else {
+    linkKeys.forEach((key, idx) => {
+      addDynamicItemContent('linksList', 'sourceLinks[]', 'https://...', links[key], idx === 0);
+    });
+  }
+
+  document.getElementById('topicModal').classList.add('active');
+}
+
+function addDynamicItemContent(listId, inputName, placeholderTxt, val, isFirst) {
+  const list = document.getElementById(listId);
+  const div = document.createElement('div');
+  div.className = 'dynamic-item';
+  
+  const type = inputName.includes('Link') ? 'url' : 'text';
+  const btnAction = isFirst 
+    ? `<button type="button" class="btn-add-item" onclick="addDynamicItem('${listId}', '${inputName}', '${placeholderTxt}')">+</button>`
+    : `<button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">-</button>`;
+
+  div.innerHTML = `
+    <input type="${type}" name="${inputName}" class="form-input" placeholder="${placeholderTxt}" value="${val}" required>
+    ${btnAction}
+  `;
+  list.appendChild(div);
+}
+
+async function deleteTopic(id) {
+  if (confirm('Are you sure you want to delete this topic?')) {
+    try {
+      const response = await fetch(`/admin/api/topics/${id}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        const errorData = await response.json();
+        alert("Error: " + (errorData.error || "Failed to delete topic"));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error.");
+    }
+  }
+}
+</script>
+  
+{% endblock %}
